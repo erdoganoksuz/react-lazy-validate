@@ -15,8 +15,7 @@ export class ValidatorGroup extends Component {
     }
 
     addStack(key) {
-        this.stack[key] = true;
-        console.log(this.stack);
+        this.stack[key] = false;
     }
 
     register(key) {
@@ -24,11 +23,11 @@ export class ValidatorGroup extends Component {
     }
 
     removeStack(key) {
-        this.stack[key] = false;
-        console.log(this.stack);
+        this.stack[key] = true;
     }
 
     isValid() {
+        console.log(this.stack);
         return !Object.keys(this.stack).some(item => this.stack[item] === false);
     }
 
@@ -58,10 +57,8 @@ export class Submit extends Component {
     }
 
     onClick(e) {
-        console.log(this.context.isValid());
-        if (this.props.children.props.onClick) {
-            this.props.children.props.onClick(e);
-        }
+        console.log(this.context.isValid())
+        if (this.context.isValid() && this.props.children.props.onClick) this.props.children.props.onClick(e);
     }
 
     render() {
@@ -77,11 +74,13 @@ export class Validator extends Component {
         super(props);
         this.props = props;
 
-        this.key = Date.now();
+        this.key = Math.random();
+        this.errorBag = {};
+
         this.state = {
             errorMessage: ""
         }
-
+        this.onError = this.onError.bind(this);
         this.onChange = this.onChange.bind(this);
         this.checkMinMax = this.checkMinMax.bind(this);
         this.addErrorToStack = this.addErrorToStack.bind(this);
@@ -103,10 +102,15 @@ export class Validator extends Component {
     checkMinMax(val) {
         const { min, max } = this.props;
         if (val.length < min || val.length > max) {
-            this.setState({ errorMessage: "Please provide text" });
+            this.onError();
             this.addErrorToStack();
         }
         else this.clearError()
+    }
+
+    onError() {
+        this.errorBag["min"] = "Please provide text";
+        if (this.props.onError) this.props.onError(this.errorBag);
     }
 
     addErrorToStack() {
@@ -115,7 +119,6 @@ export class Validator extends Component {
 
     removeErrorToStack() {
         this.context.removeStack(this.key)
-
     }
 
     clearError() {
@@ -124,7 +127,10 @@ export class Validator extends Component {
     }
 
     render() {
-        return cloneElement(this.props.children, { onChange: this.onChange });
-
+        return (
+            <>
+                {cloneElement(this.props.children, { onChange: this.onChange })}
+            </>
+        );
     }
 }

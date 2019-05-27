@@ -55,7 +55,7 @@ export default class Demo extends Component {
                     <ValidatorGroup onChange>
                         <div>
                             <div>
-                                <Validator min={2} max={3}>
+                                <Validator onError={(e) => console.log(e)} min={2} max={3}>
                                     <input type="text" placeholder="Username" onChange={this.handleUserName} />
                                 </Validator>
                             </div>
@@ -66,13 +66,13 @@ export default class Demo extends Component {
                             </Validator>
                         </div>
                         <Submit>
-                            <h1>
-                                <button onClick={this.save}>Save</button>
-                            </h1>
+                            <button onClick={this.save}>Save</button>
                         </Submit>
                     </ValidatorGroup>
                 </header >
-            </div >
+
+
+            </div>
         );
     }
 }
